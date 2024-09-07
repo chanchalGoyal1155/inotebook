@@ -1,32 +1,48 @@
-import React from "react";
+import React, { useContext,useState } from "react";
+
+import noteContext from "../context/notes/noteContext";
+
 
 const Addnote = () => {
+  const context = useContext(noteContext);
+  const {addNote} = context;
+  const [note,setNote] = useState({title: "", description: "", tag: "default"})
+  const handleClick = (e) => {
+    e.preventDefault();
+    addNote(note.title, note.description, note.tag);
+  };
+  const onChange =(e)=>{
+    setNote({...note, [e.target.name]: e.target.value})
+  }
+
   return (
     <div className="container my-3">
       <h2>Add a Note</h2>
       <form className="my-3">
         <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Email address
+          <label htmlFor="title" className="form-label">
+            Title
           </label>
           <input
-            type="email"
+            type="text"
             className="form-control"
-            id="exampleInputEmail1"
+            id="title"
+            name="title"
             aria-describedby="emailHelp"
+            onChange={onChange}
           />
-          <div id="emailHelp" className="form-text">
-            We'll never share your email with anyone else.
-          </div>
+  
         </div>
         <div className="mb-3">
-          <label htmlFor="exampleInputPassword1" className="form-label">
-            Password
+          <label htmlFor="description" className="form-label">
+            Description
           </label>
           <input
-            type="password"
+            type="text"
             className="form-control"
-            id="exampleInputPassword1"
+            id="description"
+            name="description"
+            onChange={onChange}
           />
         </div>
         <div className="mb-3 form-check">
@@ -39,7 +55,7 @@ const Addnote = () => {
             Check me out
           </label>
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary" onClick={handleClick}>
           Submit
         </button>
       </form>
