@@ -5,24 +5,31 @@ import AddNote from "./AddNote";
 
 const Notes = () => {
   const context = useContext(noteContext);
-  const { notes, getNotes } = context;
+  const { notes, getNotes,editNote } = context;
   useEffect(() => {
     getNotes();
     // eslint-disable-next-line
   }, []);
   const ref = useRef(null);
+  const refClose = useRef(null);
+
   const [note, setNote] = useState({
-    title: "",
-    description: "",
-    tag: "default",
+    id: "",
+    etitle: "",
+    edescription: "",
+    etag: "",
   });
 
-  const updateNote = (note) => {
+  const updateNote = (currentNote) => {
     ref.current.click();
+    setNote({id: currentNote._id, etitle: currentNote.title, edescription: currentNote.description, etag: currentNote.tag})
   };
 
   const handleClick = (e) => {
-    e.preventDefault();
+    console.log("updating the note...", note)
+    editNote(note.id, note.etitle, note.edescription, note.etag)
+    refClose.current.click();
+
     
   };
   const onChange = (e) => {
@@ -48,7 +55,7 @@ const Notes = () => {
       <div
         className="modal fade"
         id="exampleModal"
-        tabindex="-1"
+        tabIndex="-1"
         role="dialog"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -75,6 +82,7 @@ const Notes = () => {
                     className="form-control"
                     id="etitle"
                     name="etitle"
+                    value={note.etitle}
                     aria-describedby="emailHelp"
                     onChange={onChange}
                   />
@@ -88,6 +96,7 @@ const Notes = () => {
                     className="form-control"
                     id="edescription"
                     name="edescription"
+                    value={note.edescription}
                     onChange={onChange}
                   />
                 </div>
@@ -100,6 +109,7 @@ const Notes = () => {
                     className="form-control"
                     id="etag"
                     name="etag"
+                    value={note.etag}
                     onChange={onChange}
                   />
                 </div>
@@ -109,12 +119,13 @@ const Notes = () => {
             </div>
             <div className="modal-footer">
               <button
+                ref={refClose}
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal">
                 Close
               </button>
-              <button type="button" className="btn btn-primary">
+              <button onClick={handleClick} type="button" className="btn btn-primary">
                 Update Note
               </button>
             </div>
