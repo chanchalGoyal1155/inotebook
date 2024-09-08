@@ -75,6 +75,7 @@ router.post(
     body("password").exists().withMessage('Password field is required').isLength({ min: 5 })
   ],
   async (req, res) => {
+    let success = false;
     // Handle validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -86,12 +87,14 @@ router.post(
       let user = await User.findOne({ email });
       // console.log(user);
       if (!user) {
+        success = false;
         return res.status(400).json({ error: "Please try to login with correct credentials" });
       }
 
       const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
-        return res.status(400).json({ error: "Please try to login with correct credentials" });
+        success = false;
+        return res.status(400).json({success, error: "Please try to login with correct credentials" });
       }
 
       const data = {
@@ -100,8 +103,8 @@ router.post(
         }
       };
       const authToken = jwt.sign(data, JWT_SECRET);
-
-      res.status(201).json({ authToken });
+      success= true;
+      res.status(201).json({ success, authToken });
     } catch (error) {
       console.error(error.message);
       res.status(500).send('Internal Server Error');
