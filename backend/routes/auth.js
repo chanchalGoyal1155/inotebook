@@ -21,10 +21,11 @@ router.post(
       .withMessage("Password must be at least 5 characters long"),
   ],
   async (req, res) => {
+    let success = false;
     // Handle validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({success, errors: errors.array() });
     }
 
     try {
@@ -33,7 +34,7 @@ router.post(
       if (existingUser) {
         return res
           .status(400)
-          .json({ error: "A user with this email already exists" });
+          .json({success, error: "A user with this email already exists" });
       }
 
       // Use `await` to wait for the salt to be generated
@@ -59,7 +60,8 @@ router.post(
 
       const authToken = jwt.sign(data, JWT_SECRET);
       // Send a response with the newly created user
-      res.status(201).json({ authToken });
+      success = true;
+      res.status(201).json({success, authToken });
     } catch (error) {
       console.error("Server Error:", error.message);
       res.status(500).send("Internal Server Error");
