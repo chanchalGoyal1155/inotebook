@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useRef, useState} from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import noteContext from "../context/notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
 
-const Notes = () => {
+const Notes = (props) => {
   const context = useContext(noteContext);
-  const { notes, getNotes,editNote } = context;
+  const { notes, getNotes, editNote } = context;
   useEffect(() => {
     getNotes();
     // eslint-disable-next-line
@@ -22,23 +22,26 @@ const Notes = () => {
 
   const updateNote = (currentNote) => {
     ref.current.click();
-    setNote({id: currentNote._id, etitle: currentNote.title, edescription: currentNote.description, etag: currentNote.tag})
+    setNote({
+      id: currentNote._id,
+      etitle: currentNote.title,
+      edescription: currentNote.description,
+      etag: currentNote.tag,
+    });
   };
 
   const handleClick = (e) => {
-    editNote(note.id, note.etitle, note.edescription, note.etag)
+    editNote(note.id, note.etitle, note.edescription, note.etag);
     refClose.current.click();
-
-    
+    props.showAlert("Updated Successfully", "success");
   };
   const onChange = (e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
 
-
   return (
     <>
-      <AddNote />
+      <AddNote showAlert={props.showAlert} />
 
       {/* Corrected Button */}
       <button
@@ -86,7 +89,6 @@ const Notes = () => {
                     onChange={onChange}
                     minLength={5}
                     required
-
                   />
                 </div>
                 <div className="mb-3">
@@ -102,7 +104,6 @@ const Notes = () => {
                     onChange={onChange}
                     minLength={5}
                     required
-
                   />
                 </div>
                 <div className="mb-3">
@@ -118,8 +119,6 @@ const Notes = () => {
                     onChange={onChange}
                   />
                 </div>
-
-               
               </form>
             </div>
             <div className="modal-footer">
@@ -130,7 +129,13 @@ const Notes = () => {
                 data-bs-dismiss="modal">
                 Close
               </button>
-              <button disabled={note.etitle.length<5 || note.edescription.length<5} onClick={handleClick} type="button" className="btn btn-primary">
+              <button
+                disabled={
+                  note.etitle.length < 5 || note.edescription.length < 5
+                }
+                onClick={handleClick}
+                type="button"
+                className="btn btn-primary">
                 Update Note
               </button>
             </div>
@@ -141,11 +146,16 @@ const Notes = () => {
       <div className="row my-3">
         <h2>Your Notes</h2>
         <div className="container mx-2">
-        {notes.length===0 && 'No notes to display'}
+          {notes.length === 0 && "No notes to display"}
         </div>
         {notes.map((note) => {
           return (
-            <Noteitem key={note._id} updateNote={updateNote} note={note} />
+            <Noteitem
+              key={note._id}
+              updateNote={updateNote}
+              showAlert={props.showAlert}
+              note={note}
+            />
           );
         })}
       </div>

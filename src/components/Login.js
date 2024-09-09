@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = (props) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
@@ -12,16 +12,20 @@ const Login = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
     });
     const json = await response.json();
     console.log(json);
     if (json.success) {
       // Save the auth token and redirect
-      localStorage.setItem('token', json.authtoken);
+      localStorage.setItem("token", json.authtoken);
       navigate("/"); // Use navigate instead of history.push
+      props.showAlert("Logged in Successfully", "success");
     } else {
-      alert("Invalid Credentials");
+      props.showAlert("Invalid Details", "danger");
     }
   };
 
@@ -62,10 +66,7 @@ const Login = () => {
             name="password"
           />
         </div>
-        <button
-          type="submit"
-          className="btn btn-primary"
-        >
+        <button type="submit" className="btn btn-primary">
           Submit
         </button>
       </form>
